@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mercedes-Benz Canada — PRM Platform</title>
+  <meta name="description"
+    content="Mercedes-Benz Canada's PRM digital platform for dealer network operations and national corporate analytics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════ -->
+  <div id="screen-login" class="screen active">
+    <div class="login-bg">
+      <div class="login-glow login-glow--1"></div>
+      <div class="login-glow login-glow--2"></div>
+      <div class="login-container" style="position:relative;">
+        <div style="position:absolute; top:24px; right:24px; z-index:10;">
+          <select class="lang-select" style="background:transparent; color:#C0C0C0; border:1px solid rgba(192,192,192,0.3); padding:4px 8px; border-radius:4px; font-family:'Inter',sans-serif; outline:none; cursor:pointer; font-size:12px;">
+            <option value="en" style="color:#000">EN</option>
+            <option value="es" style="color:#000">ES</option>
+            <option value="fr" style="color:#000">FR</option>
+          </select>
+        </div>
+
+        <!-- Brand -->
+        <div class="login-brand">
+          <div class="mb-logo">
+            <svg viewBox="0 0 100 100" class="star-logo" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="47" fill="none" stroke="#C0C0C0" stroke-width="1.5" />
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#C0C0C0" stroke-width="0.4" />
+              <!-- 3-pointed star -->
+              <polygon points="50,6 55.5,35.5 84,44 55.5,52 62,82 50,62 38,82 44.5,52 16,44 44.5,35.5" fill="#C0C0C0" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">Mercedes-Benz</span>
+            <span class="brand-sub" data-i18n="brand_sub">Canada · Digital Platform</span>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="login-form-wrap">
+          <h1 class="login-title" data-i18n="login_title">Welcome</h1>
+          <p class="login-desc" data-i18n="login_desc">Sign in to access your portal</p>
+
+          <form class="login-form" id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label class="form-label" for="login-email" data-i18n="email_label">Email Address</label>
+              <div class="input-wrap">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.5">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <input type="email" id="login-email" class="form-input" data-i18n-placeholder="email_placeholder" placeholder="your@email.com"
+                  autocomplete="email" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="login-password" data-i18n="password_label">Password</label>
+              <div class="input-wrap">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <input type="password" id="login-password" class="form-input" placeholder="••••••••"
+                  autocomplete="current-password" />
+              </div>
+              <a href="#" class="forgot-link" onclick="return false;" data-i18n="forgot_password">Forgot password?</a>
+            </div>
+
+            <div class="role-select-section">
+              <div class="role-select-label" data-i18n="select_role">Select your access role</div>
+              <div class="role-cards" id="role-cards">
+                <button type="button" class="role-card" id="role-concesionario" data-role="concesionario"
+                  onclick="selectRole('concesionario')">
+                  <div class="role-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
+                      <rect x="2" y="7" width="20" height="14" rx="2" />
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                    </svg>
+                  </div>
+                  <div class="role-text">
+                    <span class="role-label" data-i18n="role_dealer">Dealer Staff</span>
+                    <span class="role-desc" data-i18n="role_dealer_desc">Dealership personnel</span>
+                  </div>
+                  <div class="role-check">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                </button>
+
+                <button type="button" class="role-card role-card--featured" id="role-corporativo"
+                  data-role="corporativo" onclick="selectRole('corporativo')">
+                  <div class="role-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                      <polyline points="9,22 9,12 15,12 15,22" />
+                    </svg>
+                  </div>
+                  <div class="role-text">
+                    <span class="role-label" data-i18n="role_corp">Corporate</span>
+                    <span class="role-desc" data-i18n="role_corp_desc">MB Canada executive</span>
+                  </div>
+                  <div class="role-check">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="login-btn" id="login-btn">
+              <span data-i18n="access_platform">Access Platform</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </form>
+
+          <p class="login-footer-note">
+            <span data-i18n="footer_note">© 2026 Mercedes-Benz Canada</span>&nbsp;·&nbsp;
+            <span class="pipeda-badge" data-i18n="pipeda_badge">PIPEDA &amp; Quebec Law 25 Compliant</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════════ -->
+  <div id="app-shell" class="screen">
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <svg viewBox="0 0 100 100" class="sidebar-star" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="47" fill="none" stroke="#C0C0C0" stroke-width="1.5" />
+          <polygon points="50,6 55.5,35.5 84,44 55.5,52 62,82 50,62 38,82 44.5,52 16,44 44.5,35.5" fill="#C0C0C0" />
+        </svg>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Mercedes-Benz</div>
+          <div class="sidebar-brand-sub" id="sidebar-role-label">Canada</div>
+        </div>
+        <button class="sidebar-close" onclick="closeSidebar()" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Populated dynamically by JS -->
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-avatar">U</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-username">User</div>
+            <div class="user-role" id="sidebar-userrole">—</div>
+          </div>
+          <button class="logout-btn" onclick="logout()" title="Sign out" aria-label="Sign out">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        </div>
+        <div class="sidebar-pipeda" data-i18n="pipeda_sidebar">PIPEDA · Quebec Law 25</div>
+      </div>
+    </aside>
+
+    <!-- App body -->
+    <div class="app-body" id="app-body">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+          </button>
+          <div class="breadcrumb" id="breadcrumb">Dashboard</div>
+        </div>
+        <div class="topbar-right">
+          <select class="lang-select" style="margin-right:12px; background:transparent; color:var(--text-100); border:1px solid rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px; font-family:'Inter',sans-serif; outline:none; cursor:pointer; font-size:12px;">
+            <option value="en" style="color:#000">EN</option>
+            <option value="es" style="color:#000">ES</option>
+            <option value="fr" style="color:#000">FR</option>
+          </select>
+          <div class="topbar-date" id="topbar-date"></div>
+          <button class="notif-btn" id="notif-btn" aria-label="Notifications" style="position:relative;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="notif-dot" id="notif-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main content -->
+      <main class="main-content" id="main-content">
+        <!-- Panels rendered dynamically by JS -->
+      </main>
+
+    </div><!-- /app-body -->
+
+  </div><!-- /app-shell -->
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
