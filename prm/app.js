@@ -1614,9 +1614,9 @@ function renderDealerClients(){
         <td><div class="flex items-center gap-8"><span style="color:${c.vehicle.health>=80?'var(--success)':c.vehicle.health>=55?'var(--warning)':'var(--danger)'}">●</span>${c.vehicle.health}%</div></td>
         <td>${fmtDate(c.vehicle.nextService)}</td>
         <td><div class="flex gap-8">
-          <button class="btn btn--ghost btn--sm" onclick="openClientProfile('${c.id}')">View</button>
+          <button class="btn btn--ghost btn--sm" onclick="openClientProfile('${c.id}')">${t('view_btn')}</button>
           <div class="dropdown-wrap">
-            <button class="btn btn--primary btn--sm" onclick="toggleDropdown(this)">Contact</button>
+            <button class="btn btn--primary btn--sm" onclick="toggleDropdown(this)">${t('contact_client')}</button>
             <div class="dropdown-menu">
               <a href="mailto:${c.email}?subject=Mercedes-Benz Montreal — Seguimiento" class="dropdown-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -1629,16 +1629,16 @@ function renderDealerClients(){
             </div>
           </div>
         </div></td>
-      </tr>`).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--text-500);padding:24px;">No clients match your search.</td></tr>`;
+      </tr>`).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--text-500);padding:24px;">${t('no_clients_match')}</td></tr>`;
 
     const countEl = document.getElementById('client-count');
-    if(countEl) countEl.textContent = filtered.length + ' client' + (filtered.length !== 1 ? 's' : '');
+    if(countEl) countEl.textContent = filtered.length + ' ' + (filtered.length !== 1 ? t('clients_plural') : t('client_singular'));
   }
 
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
     <div class="page-header-row">
-      <div class="page-header"><div class="page-title">Client Management</div><div class="page-sub">Mercedes-Benz Montreal portfolio · <span id="client-count">${CLIENTS.length} clients</span></div></div>
+      <div class="page-header"><div class="page-title">${t('client_management')}</div><div class="page-sub">${t('client_portfolio_sub')} · <span id="client-count">${CLIENTS.length} ${t('clients_plural')}</span></div></div>
       <button class="btn btn--primary" onclick="exportClientsCSV()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         ${t('export_csv')}
@@ -1649,27 +1649,27 @@ function renderDealerClients(){
     <div class="filter-row">
       <div class="search-bar" style="flex:1;min-width:200px;max-width:340px;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-input" id="client-search" placeholder="Search by name, model or email..." oninput="dealerSearchUpdate()" />
+        <input class="search-input" id="client-search" placeholder="${t('search_clients_placeholder')}" oninput="dealerSearchUpdate()" />
       </div>
       <select class="filter-select" id="filter-seg" onchange="dealerFilterUpdate()">
-        <option value="all">All Segments</option>
+        <option value="all">${t('all_segments')}</option>
         <option value="AMG">AMG</option>
         <option value="EQ">EQ</option>
         <option value="SUV">SUV</option>
         <option value="Sedan">Sedan</option>
       </select>
       <select class="filter-select" id="filter-status" onchange="dealerFilterUpdate()">
-        <option value="all">All Statuses</option>
-        <option value="Active">Active</option>
-        <option value="Expiring Soon">Expiring Soon</option>
-        <option value="Finance">Finance</option>
+        <option value="all">${t('all_statuses')}</option>
+        <option value="Active">${t('Active')}</option>
+        <option value="Expiring Soon">${t('Expiring Soon')}</option>
+        <option value="Finance">${t('finance_option')}</option>
       </select>
     </div>
     <div class="card">
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Client</th><th>Province</th><th>Vehicle</th><th>Segment</th><th>Lease Status</th><th>Health</th><th>Next Service</th><th>Actions</th></tr>
+            <tr><th>${t('th_client')}</th><th>${t('th_province')}</th><th>${t('th_vehicle')}</th><th>${t('th_segment')}</th><th>${t('th_lease_status')}</th><th>${t('th_health')}</th><th>${t('th_next_service')}</th><th>${t('th_actions')}</th></tr>
           </thead>
           <tbody id="client-table-body"></tbody>
         </table>
@@ -1786,29 +1786,29 @@ function renderDealerReports(){
   const d = DEALERS.find(x=>x.id==='DLR-QC-01');
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
-    <div class="page-header"><div class="page-title">Reports & Metrics</div><div class="page-sub">Mercedes-Benz Montreal · Year to date</div></div>
+    <div class="page-header"><div class="page-title">${t('reports_metrics')}</div><div class="page-sub">${t('reports_sub')}</div></div>
   </div>
   <div class="panel-section">
     <div class="kpi-grid kpi-grid--4" style="margin-bottom:20px;">
-      <div class="kpi-card kpi-card--blue"><div class="kpi-label">NPS Score</div><div class="kpi-value">${d.nps}</div><div class="kpi-trend kpi-trend--up">↑ +0.3 vs Q1</div></div>
-      <div class="kpi-card kpi-card--success"><div class="kpi-label">Services Done</div><div class="kpi-value">${d.services}</div><div class="kpi-sub">Target: ${d.target}</div></div>
-      <div class="kpi-card kpi-card--warning"><div class="kpi-label">Avg Response</div><div class="kpi-value kpi-value--md">${d.respTime}</div><div class="kpi-sub">SLA: &lt; 3.0h</div></div>
-      <div class="kpi-card kpi-card--silver"><div class="kpi-label">Renewals Closed</div><div class="kpi-value">${d.renewals}</div><div class="kpi-trend kpi-trend--up">↑ +5 vs prev</div></div>
+      <div class="kpi-card kpi-card--blue"><div class="kpi-label">${t('nps_score')}</div><div class="kpi-value">${d.nps}</div><div class="kpi-trend kpi-trend--up">↑ +0.3 ${t('vs_q1')}</div></div>
+      <div class="kpi-card kpi-card--success"><div class="kpi-label">${t('services_done')}</div><div class="kpi-value">${d.services}</div><div class="kpi-sub">${t('target_label')}: ${d.target}</div></div>
+      <div class="kpi-card kpi-card--warning"><div class="kpi-label">${t('avg_response')}</div><div class="kpi-value kpi-value--md">${d.respTime}</div><div class="kpi-sub">SLA: &lt; 3.0h</div></div>
+      <div class="kpi-card kpi-card--silver"><div class="kpi-label">${t('renewals_closed')}</div><div class="kpi-value">${d.renewals}</div><div class="kpi-trend kpi-trend--up">↑ +5 ${t('vs_prev')}</div></div>
     </div>
     <div class="grid-2">
       <div class="card">
-        <div class="card-header"><span class="card-title">NPS Trend (6 months)</span></div>
+        <div class="card-header"><span class="card-title">${t('nps_trend_6mo')}</span></div>
         <div class="card-body"><div class="chart-container chart-h-220"><canvas id="chart-nps-trend"></canvas></div></div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Services — Completed vs Pending</span></div>
+        <div class="card-header"><span class="card-title">${t('services_completed_pending')}</span></div>
         <div class="card-body"><div class="chart-container chart-h-220"><canvas id="chart-services-pie"></canvas></div></div>
       </div>
     </div>
   </div>
   <div class="panel-section">
     <div class="card">
-      <div class="card-header"><span class="card-title">Monthly Services</span></div>
+      <div class="card-header"><span class="card-title">${t('monthly_services')}</span></div>
       <div class="card-body"><div class="chart-container chart-h-220"><canvas id="chart-monthly-svcs"></canvas></div></div>
     </div>
   </div>`;
@@ -1825,71 +1825,71 @@ function renderDealerReports(){
 ────────────────────────────────────────────────────────── */
 function renderCorpDashboard(){
   const activity = [
-    { text:'<strong>Mercedes-Benz Vancouver</strong> synced 28 client records', time:'2m ago', type:'success' },
-    { text:'New lease renewal completed — <strong>Liam MacKenzie</strong> · ON', time:'14m ago', type:'success' },
-    { text:'Maintenance alert triggered — <strong>James Kowalski</strong> · Ottawa', time:'31m ago', type:'warning' },
-    { text:'<strong>MB Laval</strong> data sync pending — 47 records queued', time:'1h ago', type:'warning' },
-    { text:'<strong>Olivia Chen</strong> booked pre-lease-end inspection — BC', time:'2h ago', type:'success' },
-    { text:'5 new client profiles created — <strong>MB Calgary</strong>', time:'3h ago', type:'success' },
-    { text:'NPS survey completed — National average: <strong>8.1</strong>', time:'4h ago', type:'success' }
+    { text: t('activity_sync_records').replace('{dealer}','Mercedes-Benz Vancouver').replace('{count}','28'), time: t('time_2m_ago'), type:'success' },
+    { text: t('activity_renewal_completed').replace('{name}','Liam MacKenzie').replace('{prov}','ON'), time: t('time_14m_ago'), type:'success' },
+    { text: t('activity_maintenance_alert').replace('{name}','James Kowalski').replace('{city}','Ottawa'), time: t('time_31m_ago'), type:'warning' },
+    { text: t('activity_sync_pending').replace('{dealer}','MB Laval').replace('{count}','47'), time: t('time_1h_ago'), type:'warning' },
+    { text: t('activity_inspection_booked').replace('{name}','Olivia Chen').replace('{prov}','BC'), time: t('time_2h_ago'), type:'success' },
+    { text: t('activity_profiles_created').replace('{count}','5').replace('{dealer}','MB Calgary'), time: t('time_3h_ago'), type:'success' },
+    { text: t('activity_nps_survey').replace('{score}','8.1'), time: t('time_4h_ago'), type:'success' }
   ];
 
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
     <div class="page-header-row">
-      <div class="page-header"><div class="page-title">Executive Dashboard</div><div class="page-sub">Mercedes-Benz Canada · National overview · Live</div></div>
-      <div class="flex items-center gap-8">${badge(t('live_data'),'success')} <span class="text-xs text-muted">${t('updated_ago').replace('{when}','2m ago')}</span></div>
+      <div class="page-header"><div class="page-title">${t('executive_dashboard')}</div><div class="page-sub">${t('national_overview_live')}</div></div>
+      <div class="flex items-center gap-8">${badge(t('live_data'),'success')} <span class="text-xs text-muted">${t('updated_ago').replace('{when}',t('time_2m_ago'))}</span></div>
     </div>
   </div>
   <div class="panel-section">
     <div class="kpi-grid kpi-grid--4" style="margin-bottom:20px;">
       <div class="kpi-card kpi-card--blue">
-        <div class="kpi-label">Registered Clients</div>
+        <div class="kpi-label">${t('registered_clients')}</div>
         <div class="kpi-value">${KPI.totalClients.toLocaleString()}</div>
-        <div class="kpi-trend kpi-trend--up">↑ +${KPI.newClientsMonth} this month</div>
+        <div class="kpi-trend kpi-trend--up">↑ +${KPI.newClientsMonth} ${t('this_month')}</div>
       </div>
       <div class="kpi-card kpi-card--success">
-        <div class="kpi-label">Dealers Connected</div>
+        <div class="kpi-label">${t('dealers_connected')}</div>
         <div class="kpi-value">${KPI.dealersConnected}</div>
-        <div class="kpi-sub">${DEALERS.filter(d=>d.sync==='Real-time').length} real-time · ${DEALERS.filter(d=>d.sync==='Pending').length} pending</div>
+        <div class="kpi-sub">${DEALERS.filter(d=>d.sync==='Real-time').length} ${t('real_time_lc')} · ${DEALERS.filter(d=>d.sync==='Pending').length} ${t('pending_lc')}</div>
       </div>
       <div class="kpi-card kpi-card--warning">
-        <div class="kpi-label">Renewals Pending</div>
+        <div class="kpi-label">${t('renewals_pending')}</div>
         <div class="kpi-value">${KPI.renewalsPending}</div>
-        <div class="kpi-trend kpi-trend--up">↑ +28 vs last month</div>
+        <div class="kpi-trend kpi-trend--up">↑ +28 ${t('vs_last_month')}</div>
       </div>
       <div class="kpi-card kpi-card--danger">
-        <div class="kpi-label">Services Pending</div>
+        <div class="kpi-label">${t('services_pending')}</div>
         <div class="kpi-value">${KPI.servicesPending}</div>
-        <div class="kpi-sub">Across all dealers</div>
+        <div class="kpi-sub">${t('across_all_dealers')}</div>
       </div>
     </div>
   </div>
 
   <div class="panel-section">
     <div class="card" style="margin-bottom:20px;">
-      <div class="card-header"><span class="card-title">${t('maint_intelligent')} — ${t('fleet_overview') || 'Fleet Maintenance Overview'}</span></div>
+      <div class="card-header"><span class="card-title">${t('maint_intelligent')} — ${t('fleet_overview')}</span></div>
       <div class="card-body">
         <div class="kpi-grid kpi-grid--3" style="margin-bottom:0;">
           <div class="kpi-card" style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2);">
             <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg></div>
-            <div class="kpi-label">${t('winter_tire_compliance') || 'Winter Tire Compliance'}</div>
+            <div class="kpi-label">${t('winter_tire_compliance')}</div>
             <div class="kpi-value">${KPI.fleetMaintenance.winterTireCompliance}%</div>
-            <div class="kpi-sub">Quebec & BC Mandatory Zones</div>
-            <div class="kpi-trend kpi-trend--up">↑ +15% this week</div>
+            <div class="kpi-sub">${t('quebec_bc_zones')}</div>
+            <div class="kpi-trend kpi-trend--up">↑ +15% ${t('this_week')}</div>
           </div>
           <div class="kpi-card" style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2);">
             <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-            <div class="kpi-label">${t('critical_fleet_pct') || 'Critical Fleet %'}</div>
+            <div class="kpi-label">${t('critical_fleet_pct')}</div>
             <div class="kpi-value">${KPI.fleetMaintenance.criticalFleetPct}%</div>
-            <div class="kpi-sub">Vehicles Health &lt; 45%</div>
-            <div class="kpi-trend kpi-trend--down">↓ -1.2% this month</div>
+            <div class="kpi-sub">${t('vehicles_health_below')}</div>
+            <div class="kpi-trend kpi-trend--down">↓ -1.2% ${t('this_month')}</div>
           </div>
           <div class="kpi-card" style="background:rgba(59,114,196,0.05); border:1px solid rgba(59,114,196,0.2);">
             <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#3B72C4" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-            <div class="kpi-label">${t('est_repair_costs') || 'Est. Maintenance Pipeline'}</div>
+            <div class="kpi-label">${t('est_repair_costs')}</div>
             <div class="kpi-value">${fmtMoney(KPI.fleetMaintenance.estRepairCostsCAD)} CAD</div>
-            <div class="kpi-sub">Pending national repairs</div>
+            <div class="kpi-sub">${t('pending_national_repairs')}</div>
           </div>
         </div>
       </div>
@@ -1899,7 +1899,7 @@ function renderCorpDashboard(){
   <div class="panel-section">
     <div class="grid-2">
       <div class="card" style="grid-column:span 2;">
-        <div class="card-header"><span class="card-title">National Trend — New Clients & Services</span></div>
+        <div class="card-header"><span class="card-title">${t('national_trend_clients_services')}</span></div>
         <div class="card-body"><div class="chart-container chart-h-260"><canvas id="chart-exec-trend"></canvas></div></div>
       </div>
     </div>
@@ -1907,15 +1907,15 @@ function renderCorpDashboard(){
   <div class="panel-section">
     <div class="grid-2">
       <div class="card">
-        <div class="card-header"><span class="card-title">National NPS</span></div>
+        <div class="card-header"><span class="card-title">${t('national_nps')}</span></div>
         <div class="card-body" style="text-align:center;">
           <div style="font-size:4rem;font-weight:200;color:var(--text-100);letter-spacing:-2px;">${KPI.npsNational}</div>
-          <div class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.8px;margin-top:4px;">National Average</div>
-          <div class="kpi-trend kpi-trend--up" style="justify-content:center;margin-top:12px;">↑ +0.2 vs Q1 2026</div>
+          <div class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.8px;margin-top:4px;">${t('national_average')}</div>
+          <div class="kpi-trend kpi-trend--up" style="justify-content:center;margin-top:12px;">↑ +0.2 ${t('vs_q1_2026')}</div>
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Activity Feed</span></div>
+        <div class="card-header"><span class="card-title">${t('activity_feed')}</span></div>
         <div class="card-body--sm">
           <div class="activity-feed">
             ${activity.map(a => `<div class="activity-item">
@@ -1948,39 +1948,39 @@ function renderCorpKPIs(){
 
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
-    <div class="page-header"><div class="page-title">National KPIs</div><div class="page-sub">Progress toward strategic targets · 2026</div></div>
+    <div class="page-header"><div class="page-title">${t('national_kpis')}</div><div class="page-sub">${t('progress_strategic_targets')}</div></div>
   </div>
   <div class="panel-section">
     <div class="card" style="margin-bottom:16px;">
-      <div class="card-header"><span class="card-title">Strategic Targets</span>${badge('2026 Objectives','info')}</div>
+      <div class="card-header"><span class="card-title">${t('strategic_targets')}</span>${badge(t('objectives_2026'),'info')}</div>
       <div class="card-body">
         <div style="display:flex;flex-direction:column;gap:20px;">
-          ${progressBar(KPI.profileCompleteness.current,'blue','Client Profile Completeness',KPI.profileCompleteness.target)}
-          ${progressBar(KPI.leasingRetention.current,'warning','Leasing Retention Rate',KPI.leasingRetention.target)}
-          ${progressBar(KPI.appAdoption.current,'eq','Mobile App Adoption',KPI.appAdoption.target)}
-          ${progressBar(KPI.officialServiceRate.current,'success','Official Dealer Service Rate',KPI.officialServiceRate.target)}
+          ${progressBar(KPI.profileCompleteness.current,'blue',t('client_profile_completeness'),KPI.profileCompleteness.target)}
+          ${progressBar(KPI.leasingRetention.current,'warning',t('leasing_retention_rate'),KPI.leasingRetention.target)}
+          ${progressBar(KPI.appAdoption.current,'eq',t('mobile_app_adoption'),KPI.appAdoption.target)}
+          ${progressBar(KPI.officialServiceRate.current,'success',t('official_dealer_service_rate'),KPI.officialServiceRate.target)}
         </div>
         <div class="divider" style="margin:20px 0;"></div>
         <div class="kpi-grid kpi-grid--4">
           <div class="kpi-card kpi-card--blue" style="padding:14px;">
-            <div class="kpi-label">Profile Completeness</div>
+            <div class="kpi-label">${t('profile_completeness')}</div>
             <div class="kpi-value kpi-value--md">${KPI.profileCompleteness.current}%</div>
-            <div class="kpi-sub">↑ from 40% baseline</div>
+            <div class="kpi-sub">↑ ${t('from_40_baseline')}</div>
           </div>
           <div class="kpi-card kpi-card--warning" style="padding:14px;">
-            <div class="kpi-label">Lease Retention</div>
+            <div class="kpi-label">${t('lease_retention')}</div>
             <div class="kpi-value kpi-value--md">${KPI.leasingRetention.current}%</div>
-            <div class="kpi-sub">Target: ${KPI.leasingRetention.target}%</div>
+            <div class="kpi-sub">${t('target_label')}: ${KPI.leasingRetention.target}%</div>
           </div>
           <div class="kpi-card kpi-card--success" style="padding:14px;">
-            <div class="kpi-label">App Adoption</div>
+            <div class="kpi-label">${t('app_adoption')}</div>
             <div class="kpi-value kpi-value--md">${KPI.appAdoption.current}%</div>
-            <div class="kpi-sub">Target: ${KPI.appAdoption.target}% (Year 1)</div>
+            <div class="kpi-sub">${t('target_label')}: ${KPI.appAdoption.target}% (${t('year_1')})</div>
           </div>
           <div class="kpi-card kpi-card--silver" style="padding:14px;">
-            <div class="kpi-label">Official Service Rate</div>
+            <div class="kpi-label">${t('official_service_rate')}</div>
             <div class="kpi-value kpi-value--md">${KPI.officialServiceRate.current}%</div>
-            <div class="kpi-sub">Target: ${KPI.officialServiceRate.target}%</div>
+            <div class="kpi-sub">${t('target_label')}: ${KPI.officialServiceRate.target}%</div>
           </div>
         </div>
       </div>
@@ -1988,7 +1988,7 @@ function renderCorpKPIs(){
   </div>
   <div class="panel-section">
     <div class="card">
-      <div class="card-header"><span class="card-title">NPS by Region</span><span class="card-badge badge badge--info">National avg: ${KPI.npsNational}</span></div>
+      <div class="card-header"><span class="card-title">${t('nps_by_region')}</span><span class="card-badge badge badge--info">${t('national_avg')}: ${KPI.npsNational}</span></div>
       <div class="card-body"><div class="chart-container chart-h-260"><canvas id="chart-nps-region"></canvas></div></div>
     </div>
   </div>`;
@@ -2002,26 +2002,26 @@ function renderCorpMap(){
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
     <div class="page-header-row">
-      <div class="page-header"><div class="page-title">Dealer Network Map</div><div class="page-sub">55 Mercedes-Benz Canada dealers · Sync status</div></div>
-      <div class="flex gap-8">${badge(DEALERS.filter(d=>d.sync==='Real-time').length+' Real-time','success')} ${badge(DEALERS.filter(d=>d.sync==='Pending').length+' Pending','warning')}</div>
+      <div class="page-header"><div class="page-title">${t('dealer_network_map')}</div><div class="page-sub">${t('dealer_count_sub')}</div></div>
+      <div class="flex gap-8">${badge(DEALERS.filter(d=>d.sync==='Real-time').length+' '+t('real_time_label'),'success')} ${badge(DEALERS.filter(d=>d.sync==='Pending').length+' '+t('pending_label'),'warning')}</div>
     </div>
   </div>
   <div class="panel-section">
     <div class="canada-map-wrap">
       <div class="canada-map-svg-wrap" id="canada-map-container"></div>
       <div class="map-legend">
-        <div class="legend-item"><div class="legend-dot legend-dot--green"></div>Real-time sync</div>
-        <div class="legend-item"><div class="legend-dot legend-dot--yellow"></div>Sync pending</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--text-500)"></div>Hover for details</div>
+        <div class="legend-item"><div class="legend-dot legend-dot--green"></div>${t('real_time_sync')}</div>
+        <div class="legend-item"><div class="legend-dot legend-dot--yellow"></div>${t('sync_pending')}</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--text-500)"></div>${t('hover_for_details')}</div>
       </div>
     </div>
   </div>
   <div class="panel-section">
     <div class="card">
-      <div class="card-header"><span class="card-title">Dealer Summary by Province</span></div>
+      <div class="card-header"><span class="card-title">${t('dealer_summary_by_province')}</span></div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th>Province</th><th>Dealers</th><th>Clients</th><th>Avg NPS</th><th>Sync Status</th></tr></thead>
+          <thead><tr><th>${t('th_province')}</th><th>${t('th_dealers')}</th><th>${t('th_clients')}</th><th>${t('th_avg_nps')}</th><th>${t('th_sync_status')}</th></tr></thead>
           <tbody>
             ${[
               { prov:'Ontario',          code:'ON', count:18, clients:1854, nps:8.2 },
@@ -2035,11 +2035,11 @@ function renderCorpMap(){
               { prov:'Newfoundland',     code:'NL', count:1,  clients:78,   nps:7.2 },
               { prov:"Prince Edward Is.",code:'PE', count:1,  clients:42,   nps:7.8 }
             ].map(p => `<tr>
-              <td class="td-name">${p.prov}</td>
+              <td class="td-name">${t('prov_'+p.code)}</td>
               <td>${p.count}</td>
               <td>${p.clients.toLocaleString()}</td>
               <td>${badge(p.nps.toFixed(1), p.nps>=8.4?'success':p.nps>=7.8?'info':'warning')}</td>
-              <td>${DEALERS.filter(d=>d.prov===p.code&&d.sync==='Real-time').length}/${p.count} ${badge('Real-time','success')}</td>
+              <td>${DEALERS.filter(d=>d.prov===p.code&&d.sync==='Real-time').length}/${p.count} ${badge(t('real_time_label'),'success')}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -2537,11 +2537,11 @@ function renderDealerTraining(){
     <div class="page-header-row">
       <div class="page-header">
         <div class="page-title">${t('nav_training')}</div>
-        <div class="page-sub">Mercedes-Benz Montreal · Mandatory Brand Certifications</div>
+        <div class="page-sub">${t('training_sub')}</div>
       </div>
       <div style="display:flex; align-items:center; gap:16px;">
         <div style="text-align:right;">
-          <div style="font-size:0.75rem; color:var(--text-400); text-transform:uppercase;">Compliance Score</div>
+          <div style="font-size:0.75rem; color:var(--text-400); text-transform:uppercase;">${t('compliance_score')}</div>
           <div style="font-size:1.1rem; font-weight:700; color:var(--success);">${complianceScore}%</div>
         </div>
         ${ringGauge(complianceScore, 100, 'success', 46)}
@@ -2552,24 +2552,24 @@ function renderDealerTraining(){
   <div class="panel-section">
     <div class="kpi-grid kpi-grid--4" style="margin-bottom:20px;">
       <div class="kpi-card kpi-card--success">
-        <div class="kpi-label">Completed Certs</div>
+        <div class="kpi-label">${t('completed_certs')}</div>
         <div class="kpi-value">${completedCerts}/${totalCerts}</div>
-        <div class="kpi-sub">Valid compliance items</div>
+        <div class="kpi-sub">${t('valid_compliance_items')}</div>
       </div>
       <div class="kpi-card kpi-card--warning">
-        <div class="kpi-label">In Progress</div>
+        <div class="kpi-label">${t('in_progress_label')}</div>
         <div class="kpi-value">${inProgressCerts}</div>
-        <div class="kpi-sub">Active training sessions</div>
+        <div class="kpi-sub">${t('active_training_sessions')}</div>
       </div>
       <div class="kpi-card kpi-card--danger">
-        <div class="kpi-label">Expired / Attention</div>
+        <div class="kpi-label">${t('expired_attention')}</div>
         <div class="kpi-value">${expiredCerts}</div>
-        <div class="kpi-sub">Require immediate renewal</div>
+        <div class="kpi-sub">${t('require_immediate_renewal')}</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">National Average</div>
+        <div class="kpi-label">${t('national_average')}</div>
         <div class="kpi-value">84%</div>
-        <div class="kpi-sub">MB Canada target: 90%</div>
+        <div class="kpi-sub">${t('mb_canada_target')}</div>
       </div>
     </div>
   </div>
@@ -2583,7 +2583,7 @@ function renderDealerTraining(){
             <tr>
               <th>${t('staff_member')}</th>
               <th>${t('role_label')}</th>
-              <th>Course / Standard</th>
+              <th>${t('course_standard')}</th>
               <th>${t('status_label')}</th>
               <th>${t('expiry_date')}</th>
             </tr>
