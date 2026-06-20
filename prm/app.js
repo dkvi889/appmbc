@@ -687,10 +687,10 @@ function segBadge(seg){
   return badge(seg, map[seg] || 'silver');
 }
 function contractBadge(s){
-  if(s==='Active') return badge(s,'success');
-  if(s==='Expiring Soon') return badge(s,'warning');
-  if(s==='Expired') return badge(s,'danger');
-  return badge(s,'silver');
+  if(s==='Active') return badge(t(s),'success');
+  if(s==='Expiring Soon') return badge(t(s),'warning');
+  if(s==='Expired') return badge(t(s),'danger');
+  return badge(t(s),'silver');
 }
 function syncBadge(s){
   if(s==='Real-time') return badge('● Real-time','success');
@@ -941,28 +941,28 @@ function openRenewalModal(clientId) {
       </div>
       <div class="modal-body">
         <div class="stat-row" style="margin-bottom:16px;">
-          <span class="stat-row-key">Current Contract</span>
+          <span class="stat-row-key">${t('current_contract')}</span>
           <span class="stat-row-val">${c.contract.type} (${fmtDate(c.contract.end)})</span>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="display:block; font-size:0.8rem; color:var(--text-400); margin-bottom:6px;">Proposed Duration</label>
+          <label style="display:block; font-size:0.8rem; color:var(--text-400); margin-bottom:6px;">${t('proposed_duration')}</label>
           <select class="form-select" id="renewal-duration">
-            <option value="36"${c.contract.renewalAppointment && c.contract.renewalAppointment.duration==='36' ? ' selected' : ''}>36 Months</option>
-            <option value="48"${c.contract.renewalAppointment && c.contract.renewalAppointment.duration==='48' ? ' selected' : ''}>48 Months</option>
-            <option value="60"${c.contract.renewalAppointment && c.contract.renewalAppointment.duration==='60' ? ' selected' : ''}>60 Months</option>
+            <option value="36"${c.contract.renewalAppointment && c.contract.renewalAppointment.duration==='36' ? ' selected' : ''}>${t('months_36')}</option>
+            <option value="48"${c.contract.renewalAppointment && c.contract.renewalAppointment.duration==='48' ? ' selected' : ''}>${t('months_48')}</option>
+            <option value="60"${c.contract.renewalAppointment && c.contract.renewalAppointment.duration==='60' ? ' selected' : ''}>${t('months_60')}</option>
           </select>
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="display:block; font-size:0.8rem; color:var(--text-400); margin-bottom:6px;">Target Model</label>
+          <label style="display:block; font-size:0.8rem; color:var(--text-400); margin-bottom:6px;">${t('target_model')}</label>
           <input type="text" class="form-select" id="renewal-model" value="${c.contract.renewalAppointment && c.contract.renewalAppointment.targetModel ? c.contract.renewalAppointment.targetModel : c.vehicle.model}" placeholder="e.g. EQS 580" />
         </div>
         <div style="margin-bottom: 12px;">
-          <label style="display:block; font-size:0.8rem; color:var(--text-400); margin-bottom:6px;">Appointment Date</label>
+          <label style="display:block; font-size:0.8rem; color:var(--text-400); margin-bottom:6px;">${t('appointment_date')}</label>
           <input type="date" class="form-select" id="renewal-date" value="${c.contract.renewalAppointment && c.contract.renewalAppointment.date ? c.contract.renewalAppointment.date : ''}" />
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn--ghost" onclick="closeAllModals()">Cancel</button>
+        <button class="btn btn--ghost" onclick="closeAllModals()">${t('cancel_btn')}</button>
         <button class="btn btn--primary" onclick="confirmRenewalRequest('${c.id}')">${t('confirm_renewal')}</button>
       </div>
     </div>
@@ -1699,13 +1699,13 @@ function renderDealerFollowup(){
 
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
-    <div class="page-header"><div class="page-title">Post-Sale Follow-up</div><div class="page-sub">Client follow-up tracker · Mercedes-Benz Montreal</div></div>
+    <div class="page-header"><div class="page-title">${t('postsale_followup_title')}</div><div class="page-sub">${t('postsale_followup_sub')}</div></div>
   </div>
   <div class="panel-section">
     <div class="kpi-grid kpi-grid--3" style="margin-bottom:20px;">
-      <div class="kpi-card"><div class="kpi-label">Open Follow-ups</div><div class="kpi-value">2</div></div>
-      <div class="kpi-card"><div class="kpi-label">In Progress</div><div class="kpi-value">1</div></div>
-      <div class="kpi-card"><div class="kpi-label">Completed This Month</div><div class="kpi-value">7</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('open_followups')}</div><div class="kpi-value">2</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('in_progress_label')}</div><div class="kpi-value">1</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('completed_this_month')}</div><div class="kpi-value">7</div></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
       ${followups.map(f => `
@@ -1715,15 +1715,15 @@ function renderDealerFollowup(){
               <div class="flex items-center gap-8" style="margin-bottom:4px;">
                 <div class="avatar avatar--sm">${f.client.avatar}</div>
                 <div class="followup-name">${f.client.name}</div>
-                ${badge(f.priority+' Priority', pColors[f.priority])}
+                ${badge(t('priority_'+f.priority.toLowerCase()), pColors[f.priority])}
               </div>
               <div style="font-size:0.88rem;font-weight:500;color:var(--text-100);margin-bottom:4px;">${f.subject}</div>
             </div>
-            ${badge(f.status, f.status==='Completed'?'success':f.status==='In Progress'?'info':'warning')}
+            ${badge(t(f.status), f.status==='Completed'?'success':f.status==='In Progress'?'info':'warning')}
           </div>
           <div class="followup-desc">${f.desc}</div>
           <div class="followup-footer">
-            <div class="followup-date">Last contact: ${fmtDate(f.lastContact)} · Due: ${fmtDate(f.due)}</div>
+            <div class="followup-date">${t('last_contact_due').replace('{last}', fmtDate(f.lastContact)).replace('{due}', fmtDate(f.due))}</div>
             <div class="followup-actions">
               <button class="btn btn--secondary btn--sm" onclick="logFollowUpCall(${f.id})">${t('mark_contacted')}</button>
               <button class="btn btn--primary btn--sm" onclick="sendFollowUpEmail(${f.id})">${t('send_email')}</button>
@@ -1744,17 +1744,17 @@ function renderDealerRenewals(){
   document.getElementById('main-content').innerHTML = `
   <div class="panel-section">
     <div class="page-header-row">
-      <div class="page-header"><div class="page-title">Lease Renewals</div><div class="page-sub">Active lease contracts · Sorted by urgency</div></div>
+      <div class="page-header"><div class="page-title">${t('lease_renewals_title')}</div><div class="page-sub">${t('lease_renewals_sub')}</div></div>
       <div class="flex gap-8">
-        ${badge('2 Urgent','danger')} ${badge('2 Soon','warning')} ${badge('2 Active','success')}
+        ${badge(t('urgent_count').replace('{count}','2'),'danger')} ${badge(t('soon_count').replace('{count}','2'),'warning')} ${badge(t('active_count').replace('{count}','2'),'success')}
       </div>
     </div>
   </div>
   <div class="panel-section">
     <div class="card" style="margin-bottom:16px;">
-      <div class="card-header"><span class="card-title">Renewal Pipeline</span></div>
+      <div class="card-header"><span class="card-title">${t('renewal_pipeline')}</span></div>
       <div class="card-body">
-        ${progressBar(Math.round(renewalClients.filter(c=>c.contract.renewalStatus==='In Progress').length/renewalClients.length*100),'blue','Renewals In Progress',null)}
+        ${progressBar(Math.round(renewalClients.filter(c=>c.contract.renewalStatus==='In Progress').length/renewalClients.length*100),'blue',t('renewals_in_progress'),null)}
       </div>
     </div>
     <div>
@@ -1765,16 +1765,16 @@ function renderDealerRenewals(){
           <div class="renewal-info">
             <div class="renewal-name">${c.name}</div>
             <div class="renewal-model">${c.vehicle.year} ${c.vehicle.model} · ${c.province}</div>
-            <div style="margin-top:4px;">${badge(c.contract.renewalStatus,'silver')} ${contractBadge(c.contract.status)}</div>
-            ${c.contract.renewalAppointment && c.contract.renewalAppointment.date ? `<div style="margin-top:4px;font-size:0.78rem;color:var(--text-400);">Appointment: ${fmtDate(c.contract.renewalAppointment.date)}</div>` : ''}
+            <div style="margin-top:4px;">${badge(t(c.contract.renewalStatus),'silver')} ${contractBadge(c.contract.status)}</div>
+            ${c.contract.renewalAppointment && c.contract.renewalAppointment.date ? `<div style="margin-top:4px;font-size:0.78rem;color:var(--text-400);">${t('appointment_label').replace('{date}', fmtDate(c.contract.renewalAppointment.date))}</div>` : ''}
           </div>
           <div class="renewal-dates">
             <div class="renewal-end">${fmtDate(c.contract.end)}</div>
-            <div class="renewal-days" style="color:var(--${c.urgency})">${c.days > 0 ? c.days+' days left' : 'Expired'}</div>
+            <div class="renewal-days" style="color:var(--${c.urgency})">${c.days > 0 ? t('days_left').replace('{count}', c.days) : t('Expired')}</div>
             <div style="margin-top:6px;">
               ${c.contract.renewalStatus === 'In Progress'
-                ? `<button class="btn btn--secondary btn--sm" onclick="openRenewalModal('${c.id}')">Edit Renewal</button>`
-                : `<button class="btn btn--primary btn--sm" onclick="openRenewalModal('${c.id}')">Start Renewal</button>`}
+                ? `<button class="btn btn--secondary btn--sm" onclick="openRenewalModal('${c.id}')">${t('edit_renewal')}</button>`
+                : `<button class="btn btn--primary btn--sm" onclick="openRenewalModal('${c.id}')">${t('start_renewal')}</button>`}
             </div>
           </div>
         </div>`).join('')}
