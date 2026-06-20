@@ -518,22 +518,6 @@ const KPI = {
   ]
 };
 
-const WEATHER_BY_PROVINCE = {
-  'Quebec': { temp: -11, condition: 'Light snow', risk: 'Road ice on bridges and exposed routes', severity: 'warning' },
-  'Ontario': { temp: -7, condition: 'Freezing drizzle', risk: 'Black ice during morning departures', severity: 'warning' },
-  'British Columbia': { temp: 4, condition: 'Coastal rain', risk: 'Wet braking surfaces and mountain snow above elevation', severity: 'info' },
-  'Alberta': { temp: -18, condition: 'Dry cold', risk: 'Reduced EV range and cold-soak battery behavior', severity: 'danger' },
-  'Manitoba': { temp: -21, condition: 'Blowing snow', risk: 'Whiteout pockets and deep cold starts', severity: 'danger' },
-  'Saskatchewan': { temp: -19, condition: 'Wind chill advisory', risk: 'Ice risk and battery performance loss', severity: 'danger' },
-  'New Brunswick': { temp: -6, condition: 'Snow showers', risk: 'Slush refreeze after sunset', severity: 'warning' },
-  'Nova Scotia': { temp: -2, condition: 'Mixed precipitation', risk: 'Coastal freeze-thaw and low traction', severity: 'warning' },
-  'Prince Edward Island': { temp: -5, condition: 'Snow squalls', risk: 'Rapidly changing visibility', severity: 'warning' },
-  'Newfoundland and Labrador': { temp: -8, condition: 'Coastal snow', risk: 'High wind and icy exposed roads', severity: 'warning' },
-  'Yukon': { temp: -26, condition: 'Extreme cold', risk: 'Severe cold start and tire pressure drop', severity: 'danger' },
-  'Northwest Territories': { temp: -29, condition: 'Extreme cold', risk: 'Battery preconditioning strongly recommended', severity: 'danger' },
-  'Nunavut': { temp: -31, condition: 'Arctic cold', risk: 'Severe range loss and ice risk', severity: 'danger' }
-};
-
 /* ──────────────────────────────────────────────────────────
    MOCK PRM EXPANSION DATA
    ────────────────────────────────────────────────────────── */
@@ -671,16 +655,6 @@ function fmtMoney(n){ return n == null ? '—' : `$${n.toLocaleString('en-CA')}`
 function fmtKm(n){ return n.toLocaleString('en-CA') + ' km'; }
 function daysUntil(d){ return Math.ceil((new Date(d) - new Date()) / 86400000); }
 
-function healthColor(v){
-  if(v >= 80) return 'success';
-  if(v >= 55) return 'warning';
-  return 'danger';
-}
-function compColor(v){
-  if(v >= 70) return '#10B981';
-  if(v >= 45) return '#F59E0B';
-  return '#EF4444';
-}
 function badge(text, type){ return `<span class="badge badge--${type}">${text}</span>`; }
 function segBadge(seg){
   const map = { AMG:'amg', EQ:'eq', SUV:'suv', Sedan:'sedan' };
@@ -732,63 +706,6 @@ function progressBar(pct, cls, label, target){
       <div class="progress-bar-fill progress-bar-fill--${cls}" style="width:${pct}%"></div>
     </div>
   </div>`;
-}
-
-function getClientWeather(client){
-  return WEATHER_BY_PROVINCE[client.province] || { temp: 1, condition: 'Variable winter conditions', risk: 'Monitor road conditions before departure', severity: 'info' };
-}
-
-function buildContextualAlerts(client){
-  const v = client.vehicle;
-  const weather = getClientWeather(client);
-  const alerts = [];
-  const tires = v.components?.tires || {};
-  const isElectric = v.tipo_vehiculo === 'electrico' || v.tipo_vehiculo === 'hibrido';
-  const isCold = weather.temp <= -8;
-  const hasIceRisk = /ice|snow|freez|squall|cold/i.test(`${weather.condition} ${weather.risk}`);
-
-  if (tires.current_set !== 'winter' && weather.temp <= 7) {
-    alerts.push({
-      type: 'warning',
-      title: t('weather_alert_winter_tires'),
-      message: t('weather_alert_winter_tires_msg')
-    });
-  }
-
-  if (weather.temp <= -18) {
-    alerts.push({
-      type: 'danger',
-      title: t('weather_alert_extreme_temp'),
-      message: t('weather_alert_extreme_temp_msg')
-    });
-  }
-
-  if (isElectric && isCold) {
-    const efficiency = Math.round((v.battery?.coldEfficiency || 0.86) * 100);
-    alerts.push({
-      type: 'info',
-      title: t('weather_alert_battery'),
-      message: t('weather_alert_battery_msg').replace('{efficiency}', efficiency)
-    });
-  }
-
-  if (hasIceRisk) {
-    alerts.push({
-      type: 'warning',
-      title: t('weather_alert_ice'),
-      message: weather.risk
-    });
-  }
-
-  if (isElectric && isCold && (!v.preheating?.cabin || !v.preheating?.battery)) {
-    alerts.push({
-      type: 'info',
-      title: t('weather_alert_preheat'),
-      message: t('weather_alert_preheat_msg')
-    });
-  }
-
-  return alerts;
 }
 
 function destroyChart(id){
@@ -1275,31 +1192,6 @@ function buildNotifPanel(){
   const role = currentRole;
   const items = (NOTIFICATIONS[role] || []);
 
-  // Build survey notification for cliente role (only if not completed)
-  let surveyNotifHtml = '';
-  if(role === 'cliente' && !isSurveyCompleted()){
-    const surveyIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-      <polyline points="22 4 12 14.01 9 11.01"/>
-    </svg>`;
-    surveyNotifHtml = `
-    <li class="notif-item">
-      <div class="notif-icon-wrap notif-icon-wrap--survey">${surveyIcon}</div>
-      <div class="notif-body">
-        <div class="notif-text">${t('notif_survey_text')}</div>
-        <a href="${SURVEY_LINK}" target="_blank" rel="noopener noreferrer" class="notif-survey-link">
-          ${t('notif_survey_link')}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-        </a>
-        <div class="notif-time">${t('just_now')}</div>
-      </div>
-    </li>`;
-  }
-
   const itemsHtml = items.map(n => `
     <li class="notif-item">
       <div class="notif-icon-wrap notif-icon-wrap--${n.type}">${NOTIF_ICONS[n.type] || NOTIF_ICONS.info}</div>
@@ -1309,7 +1201,7 @@ function buildNotifPanel(){
       </div>
     </li>`).join('');
 
-  const totalCount = items.length + (surveyNotifHtml ? 1 : 0);
+  const totalCount = items.length;
 
   return `
   <div class="notif-panel" id="notif-panel">
@@ -1317,7 +1209,7 @@ function buildNotifPanel(){
       <span class="notif-panel-title">${t('notif_title')}</span>
       <span class="notif-panel-count">${totalCount}</span>
     </div>
-    <ul class="notif-list">${surveyNotifHtml}${itemsHtml}</ul>
+    <ul class="notif-list">${itemsHtml}</ul>
     <div class="notif-panel-footer">
       <span class="notif-panel-footer-link" onclick="closeNotifPanel()">${t('mark_read')}</span>
     </div>
@@ -1355,106 +1247,9 @@ function toggleNotifPanel(){
 /* ──────────────────────────────────────────────────────────
    CAR SILHOUETTES (SVG inline)
 ────────────────────────────────────────────────────────── */
-function carSVG(seg){
-  const svgs = {
-    EQ: `<svg viewBox="0 0 120 55" class="car-silhouette" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="30" cy="43" rx="12" ry="7" fill="#1E3A5F" opacity="0.7"/>
-      <ellipse cx="90" cy="43" rx="12" ry="7" fill="#1E3A5F" opacity="0.7"/>
-      <path d="M8,38 L8,28 Q12,14 35,12 L55,10 L80,10 Q100,11 108,20 L116,28 L116,38 Z"
-        fill="#2B5490" opacity="0.85" stroke="#3B72C4" stroke-width="0.5"/>
-      <path d="M35,12 L45,5 L78,5 L88,12" fill="#3B72C4" opacity="0.6"/>
-    </svg>`,
-    AMG: `<svg viewBox="0 0 130 50" class="car-silhouette" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="30" cy="40" rx="11" ry="7" fill="#7f1d1d" opacity="0.7"/>
-      <ellipse cx="95" cy="40" rx="11" ry="7" fill="#7f1d1d" opacity="0.7"/>
-      <path d="M6,35 L10,22 Q20,10 45,8 L65,7 L90,7 Q108,9 118,20 L124,35 Z"
-        fill="#CC0000" opacity="0.5" stroke="#EF4444" stroke-width="0.5"/>
-      <path d="M42,8 L52,2 L80,2 L92,8" fill="#EF4444" opacity="0.4"/>
-      <path d="M105,25 L118,23 L122,30" fill="none" stroke="#F59E0B" stroke-width="0.8" opacity="0.7"/>
-    </svg>`,
-    SUV: `<svg viewBox="0 0 130 55" class="car-silhouette" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="30" cy="44" rx="12" ry="8" fill="#1E3A5F" opacity="0.7"/>
-      <ellipse cx="97" cy="44" rx="12" ry="8" fill="#1E3A5F" opacity="0.7"/>
-      <path d="M5,38 L5,20 Q5,6 30,5 L100,5 Q120,6 125,18 L125,38 Z"
-        fill="#2B5490" opacity="0.6" stroke="#3B72C4" stroke-width="0.5"/>
-      <path d="M5,20 L125,18" stroke="#3B72C4" stroke-width="0.6" opacity="0.5"/>
-    </svg>`,
-    Sedan: `<svg viewBox="0 0 120 50" class="car-silhouette" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="28" cy="40" rx="11" ry="7" fill="#4B2D8F" opacity="0.7"/>
-      <ellipse cx="90" cy="40" rx="11" ry="7" fill="#4B2D8F" opacity="0.7"/>
-      <path d="M6,34 L8,24 Q15,10 38,9 L58,7 L78,7 Q98,9 108,20 L114,34 Z"
-        fill="#6D28D9" opacity="0.45" stroke="#A78BFA" stroke-width="0.5"/>
-      <path d="M36,9 L44,2 L72,2 L82,9" fill="#A78BFA" opacity="0.35"/>
-    </svg>`
-  };
-  return svgs[seg] || svgs.Sedan;
-}
-
 /* ──────────────────────────────────────────────────────────
    SURVEY HELPERS
 ────────────────────────────────────────────────────────── */
-const SURVEY_LINK = 'https://ramirezclaudiodiana-ui.github.io/Cuestionario_concesionarios/';
-const SURVEY_DISMISS_KEY = 'surveyBannerDismissedAt';
-const SURVEY_COMPLETED_KEY = 'surveyCompleted';
-const SURVEY_COOLDOWN_DAYS = 7;
-
-function isSurveyCompleted(){
-  return localStorage.getItem(SURVEY_COMPLETED_KEY) === 'true';
-}
-
-function isSurveyBannerVisible(){
-  if(isSurveyCompleted()) return false;
-  const dismissed = localStorage.getItem(SURVEY_DISMISS_KEY);
-  if(!dismissed) return true;
-  const dismissDate = new Date(dismissed);
-  const now = new Date();
-  const diffDays = (now - dismissDate) / (1000 * 60 * 60 * 24);
-  return diffDays >= SURVEY_COOLDOWN_DAYS;
-}
-
-function dismissSurveyBanner(){
-  localStorage.setItem(SURVEY_DISMISS_KEY, new Date().toISOString());
-  const banner = document.getElementById('survey-banner');
-  if(banner){
-    banner.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-    banner.style.opacity = '0';
-    banner.style.transform = 'translateY(-8px)';
-    setTimeout(() => banner.remove(), 260);
-  }
-}
-
-function buildSurveyBannerHTML(){
-  if(!isSurveyBannerVisible()) return '';
-  return `
-  <div class="survey-banner" id="survey-banner">
-    <div class="survey-banner-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-    </div>
-    <div class="survey-banner-content">
-      <div class="survey-banner-text">${t('survey_banner_text')}</div>
-      <a href="${SURVEY_LINK}" target="_blank" rel="noopener noreferrer" class="survey-banner-link">
-        ${t('take_survey')}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </a>
-    </div>
-    <button class="survey-banner-close" onclick="dismissSurveyBanner()" aria-label="Dismiss survey banner">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-  </div>`;
-}
-
 /* ──────────────────────────────────────────────────────────
    DEALER PORTAL — 5 PANELS
 ────────────────────────────────────────────────────────── */
@@ -2812,8 +2607,7 @@ window.handlePublishAnnouncement = function(e){
 function init(){
   updateDate();
   darkChartDefaults();
-  // Pre-select cliente for demo login and set initial language
-  selectRole('cliente');
+  // Set initial language (no default role pre-selected — user picks Dealer Staff or Corporate)
   if (typeof changeLanguage === 'function') {
     changeLanguage(currentLanguage);
   }
@@ -2911,114 +2705,6 @@ function requestNotificationPermission(){
   if('Notification' in window && Notification.permission === 'default'){
     Notification.requestPermission();
   }
-}
-
-// Export Functions
-function exportClientReportPDF(){
-  const c = CLIENTS[0];
-  const v = c.vehicle;
-  const con = c.contract;
-  
-  let pdfContent = `
-═══════════════════════════════════════════════════════════
-  MERCEDES-BENZ CANADA — CLIENT VEHICLE REPORT
-═══════════════════════════════════════════════════════════
-
-CLIENT INFORMATION
-─────────────────────────────────────────────────────────
-Name:        ${c.name}
-Email:       ${c.email}
-Phone:       ${c.phone}
-Location:    ${c.city}, ${c.province}
-Member Since: ${fmtDate(c.joinDate)}
-NPS Score:   ${c.nps}/10
-
-VEHICLE DETAILS
-─────────────────────────────────────────────────────────
-Model:       ${v.year} ${v.model}
-VIN:         ${v.vin}
-Segment:     ${v.segment}
-Color:       ${v.color}
-Odometer:    ${fmtKm(v.mileage)}
-Health Score: ${v.health}%
-Next Service: ${fmtDate(v.nextService)} (${daysUntil(v.nextService)} days)
-Last Service: ${fmtDate(v.lastService)}
-
-WARRANTY STATUS
-─────────────────────────────────────────────────────────
-Type:           ${v.warranty.type}
-Start Date:     ${fmtDate(v.warranty.start)}
-End Date:       ${fmtDate(v.warranty.end)}
-Mileage Limit:  ${fmtKm(v.warranty.mileageLimit)}
-Mileage Used:   ${fmtKm(v.mileage)}
-Mileage Remaining: ${fmtKm(v.warranty.mileageLimit - v.mileage)}
-
-LEASING CONTRACT
-─────────────────────────────────────────────────────────
-Type:         ${con.type}
-Duration:     ${con.duration} months (${fmtDate(con.start)} to ${fmtDate(con.end)})
-Monthly Payment: ${fmtMoney(con.monthly)}
-Status:       ${con.status}
-${con.residual ? 'Residual Value: ' + fmtMoney(con.residual) : ''}
-
-SERVICE HISTORY
-─────────────────────────────────────────────────────────
-${c.services.map((s, i) => `${i+1}. ${s.type}
-   Date: ${fmtDate(s.date)} | Dealer: ${s.dealer}
-   Status: ${s.status} | Cost: ${s.cost ? fmtMoney(s.cost) : 'TBD'}
-`).join('\n')}
-
-COMPONENT STATUS
-─────────────────────────────────────────────────────────
-${['brakes', 'tires', 'suspension', 'hvac', 'fluids'].map(comp => {
-  const c = v.components[comp];
-  return c ? `${comp.toUpperCase()}: ${c.life}%` : '';
-}).filter(x => x).join('\n')}
-
-REPORT GENERATED
-─────────────────────────────────────────────────────────
-Date: ${new Date().toLocaleString()}
-Time Zone: North America/EST
-
-═══════════════════════════════════════════════════════════
-  © 2026 Mercedes-Benz Canada — Confidential
-═══════════════════════════════════════════════════════════
-`;
-  
-  downloadFile(pdfContent, 'vehicle-report-' + c.id + '.txt', 'text/plain');
-  showPushNotification('Report exported', { 
-    message: 'Vehicle report downloaded successfully',
-    type: 'success',
-    icon: '✓'
-  });
-}
-
-function exportServiceHistoryCSV(){
-  const c = CLIENTS[0];
-  let csv = 'Service ID,Date,Type,Dealer,Status,Cost\n';
-  
-  c.services.forEach(s => {
-    csv += `${s.id},"${s.date}","${s.type}","${s.dealer}","${s.status}","${s.cost || 'N/A'}"\n`;
-  });
-  
-  downloadFile(csv, 'service-history-' + c.id + '.csv', 'text/csv');
-  showPushNotification('Service history exported', { 
-    message: `${c.services.length} service records downloaded`,
-    type: 'success',
-    icon: '📊'
-  });
-}
-
-function downloadFile(content, filename, mimeType){
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }
 
 // Request desktop notifications permission on load

@@ -448,26 +448,35 @@ function renderAlertsSection(vehicle) {
   }).join('');
 }
 
-function renderMilestones(mileage) {
+function renderMilestones(mileage, forceEnglish = false) {
   const milestones = [250000, 500000, 1000000];
   const nextMilestone = milestones.find(m => m > mileage);
 
+  const getT = (key) => {
+    if (forceEnglish) {
+      return i18n.en[key] || key;
+    }
+    return t(key);
+  };
+
   if (!nextMilestone) {
     return `<p style="color: var(--text-400); font-size: 0.85rem; padding: 16px; text-align: center;">
-      [★] ${t('no_milestones')}
+      [★] ${getT('no_milestones')}
     </p>`;
   }
 
   const kmToNext = nextMilestone - mileage;
   const progressPercent = ((mileage % 250000) / 250000) * 100;
 
+  const remainingLabel = forceEnglish ? "km remaining" : (currentLanguage === 'es' ? "km restantes" : currentLanguage === 'fr' ? "km restants" : "km remaining");
+
   return `
     <div class="milestone-badge">
       <div class="milestone-icon">✦</div>
       <div class="milestone-info">
-        <div class="milestone-title">${t('unlock_next')}</div>
+        <div class="milestone-title">${getT('unlock_next')}</div>
         <div class="milestone-desc">${(nextMilestone / 1000).toFixed(0)}K km</div>
-        <div class="milestone-progress">${kmToNext.toLocaleString()} km remaining</div>
+        <div class="milestone-progress">${kmToNext.toLocaleString()} ${remainingLabel}</div>
       </div>
     </div>
   `;
@@ -486,12 +495,12 @@ function renderPreheatWidget(vehicle) {
     <div class="preheating-widget">
       <button class="preheat-button ${cabinActive ? 'preheat-button--active' : ''}" onclick="startPreheating('cabin', event)">
         <div class="preheat-icon">CAB</div>
-        <div class="preheat-label" data-i18n="preheating_cabin">${t('preheating_cabin')}</div>
+        <div class="preheat-label" data-i18n="preheating_cabin"></div>
         <div class="preheat-status">${cabinActive ? `${t('preheating_active')} · ${remaining}s` : t('preheating_inactive')}</div>
       </button>
       <button class="preheat-button ${batteryActive ? 'preheat-button--active' : ''}" onclick="startPreheating('battery', event)">
         <div class="preheat-icon">BAT</div>
-        <div class="preheat-label" data-i18n="preheating_battery">${t('preheating_battery')}</div>
+        <div class="preheat-label" data-i18n="preheating_battery"></div>
         <div class="preheat-status">${batteryActive ? `${t('preheating_active')} · ${remaining}s` : t('preheating_inactive')}</div>
       </button>
     </div>
@@ -529,8 +538,8 @@ function renderMaintenanceDashboard(clientId) {
   const html = `
     <div class="panel panel--padded" id="panel-dashboard">
       <div class="panel-header">
-        <h1 class="panel-title" data-i18n="page_dashboard_title">${t('page_dashboard_title')}</h1>
-        <p class="panel-subtitle" data-i18n="page_dashboard_sub">${t('page_dashboard_sub')}</p>
+        <h1 class="panel-title" data-i18n="page_dashboard_title"></h1>
+        <p class="panel-subtitle" data-i18n="page_dashboard_sub"></p>
       </div>
       
       <!-- Preheating Widget (EV/Hybrid only) -->
@@ -538,7 +547,7 @@ function renderMaintenanceDashboard(clientId) {
       
       <!-- Alerts Section -->
       <div class="section-header" style="margin-top: 20px; margin-bottom: 16px;">
-        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="alerts_title">${t('alerts_title')}</h2>
+        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="alerts_title"></h2>
       </div>
       <div class="alerts-container">
         ${renderAlertsSection(vehicle)}
@@ -548,7 +557,7 @@ function renderMaintenanceDashboard(clientId) {
       
       <!-- Components Grid -->
       <div class="section-header" style="margin-top: 20px; margin-bottom: 16px;">
-        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="system_health">${t('system_health')}</h2>
+        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="system_health"></h2>
       </div>
       <div class="components-grid">
         ${componentsHTML}
@@ -556,7 +565,7 @@ function renderMaintenanceDashboard(clientId) {
       
       <!-- Milestones -->
       <div class="section-header" style="margin-top: 20px; margin-bottom: 12px;">
-        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="milestones_title">${t('milestones_title')}</h2>
+        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="milestones_title"></h2>
       </div>
       <div class="milestones-container">
         ${renderMilestones(vehicle.mileage)}
@@ -564,16 +573,16 @@ function renderMaintenanceDashboard(clientId) {
       
       <!-- Usage Report -->
       <div class="section-header" style="margin-top: 20px; margin-bottom: 12px;">
-        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="usage_title">${t('usage_title')}</h2>
+        <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-100);" data-i18n="usage_title"></h2>
       </div>
       <div class="usage-report">
         <div class="usage-stat">
           <div class="usage-value">${vehicle.mileage.toLocaleString()}</div>
-          <div class="usage-label" data-i18n="total_mileage">${t('total_mileage')}</div>
+          <div class="usage-label" data-i18n="total_mileage"></div>
         </div>
         <div class="usage-stat">
           <div class="usage-value">${vehicle.usage.monthly.toLocaleString()}</div>
-          <div class="usage-label" data-i18n="monthly_average">${t('monthly_average')}</div>
+          <div class="usage-label" data-i18n="monthly_average"></div>
         </div>
       </div>
     </div>
@@ -591,8 +600,8 @@ function renderMyVehiclePanel(clientId) {
   const html = `
     <div class="panel panel--padded" id="panel-myvehicle">
       <div class="panel-header">
-        <h1 class="panel-title" data-i18n="page_myvehicle_title">${t('page_myvehicle_title')}</h1>
-        <p class="panel-subtitle" data-i18n="page_myvehicle_sub">${t('page_myvehicle_sub')}</p>
+        <h1 class="panel-title" data-i18n="page_myvehicle_title"></h1>
+        <p class="panel-subtitle" data-i18n="page_myvehicle_sub"></p>
       </div>
       <div class="panel-image" style="margin:18px 0;text-align:center;">
         <div class="vehicle-silhouette">
@@ -602,94 +611,94 @@ function renderMyVehiclePanel(clientId) {
       
       <!-- General Information -->
       <div class="info-group">
-        <div class="info-group-title" data-i18n="general_info">${t('general_info')}</div>
+        <div class="info-group-title" data-i18n="general_info"></div>
         <div class="info-row">
-          <div class="info-key" data-i18n="year_model">${t('year_model')}</div>
+          <div class="info-key" data-i18n="year_model"></div>
           <div class="info-val">${vehicle.year}</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="model">${t('model')}</div>
+          <div class="info-key" data-i18n="model"></div>
           <div class="info-val">${vehicle.model}</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="color_exterior">${t('color_exterior')}</div>
+          <div class="info-key" data-i18n="color_exterior"></div>
           <div class="info-val">${vehicle.color}</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="color_interior">${t('color_interior')}</div>
+          <div class="info-key" data-i18n="color_interior"></div>
           <div class="info-val">${vehicle.interiorColor}</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="vin">${t('vin')}</div>
+          <div class="info-key" data-i18n="vin"></div>
           <div class="info-val" style="font-family: monospace; font-size: 0.78rem;">${vehicle.vin}</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="license_plate">${t('license_plate')}</div>
+          <div class="info-key" data-i18n="license_plate"></div>
           <div class="info-val">${vehicle.licensePlate}</div>
         </div>
       </div>
       
       <!-- Engine/Motor Specifications -->
       <div class="info-group" style="margin-top: 16px;">
-        <div class="info-group-title" data-i18n="engine_specs">${t('engine_specs')}</div>
+        <div class="info-group-title" data-i18n="engine_specs"></div>
         ${vehicle.tipo_vehiculo === 'electrico' ? `
           <div class="info-row">
-            <div class="info-key" data-i18n="battery_label">${t('battery_label')}</div>
+            <div class="info-key" data-i18n="battery_label"></div>
             <div class="info-val">${vehicle.specs.batteryCapacity}</div>
           </div>
           <div class="info-row">
-            <div class="info-key" data-i18n="electric_power">${t('electric_power')}</div>
+            <div class="info-key" data-i18n="electric_power"></div>
             <div class="info-val">${vehicle.specs.electricPower}</div>
           </div>
           <div class="info-row">
-            <div class="info-key" data-i18n="official_range">${t('official_range')}</div>
+            <div class="info-key" data-i18n="official_range"></div>
             <div class="info-val">${vehicle.specs.officialRange}</div>
           </div>
         ` : `
           <div class="info-row">
-            <div class="info-key" data-i18n="displacement">${t('displacement')}</div>
+            <div class="info-key" data-i18n="displacement"></div>
             <div class="info-val">${vehicle.specs.displacement || 'N/A'}</div>
           </div>
           <div class="info-row">
-            <div class="info-key" data-i18n="horsepower">${t('horsepower')}</div>
+            <div class="info-key" data-i18n="horsepower"></div>
             <div class="info-val">${vehicle.specs.horsepower}</div>
           </div>
           <div class="info-row">
-            <div class="info-key" data-i18n="torque">${t('torque')}</div>
+            <div class="info-key" data-i18n="torque"></div>
             <div class="info-val">${vehicle.specs.torque}</div>
           </div>
           <div class="info-row">
-            <div class="info-key" data-i18n="fuel_type">${t('fuel_type')}</div>
+            <div class="info-key" data-i18n="fuel_type"></div>
             <div class="info-val">${vehicle.specs.fuelType}</div>
           </div>
           <div class="info-row">
-            <div class="info-key" data-i18n="fuel_capacity">${t('fuel_capacity')}</div>
+            <div class="info-key" data-i18n="fuel_capacity"></div>
             <div class="info-val">${vehicle.specs.fuelCapacity || 'N/A'}</div>
           </div>
         `}
         <div class="info-row">
-          <div class="info-key" data-i18n="transmission">${t('transmission')}</div>
+          <div class="info-key" data-i18n="transmission"></div>
           <div class="info-val">${vehicle.specs.transmission}</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="traction">${t('traction')}</div>
+          <div class="info-key" data-i18n="traction"></div>
           <div class="info-val">${vehicle.specs.traction}</div>
         </div>
       </div>
       
       <!-- Current Status -->
       <div class="info-group" style="margin-top: 16px;">
-        <div class="info-group-title" data-i18n="current_status">${t('current_status')}</div>
+        <div class="info-group-title" data-i18n="current_status"></div>
         <div class="info-row">
-          <div class="info-key" data-i18n="current_mileage">${t('current_mileage')}</div>
+          <div class="info-key" data-i18n="current_mileage"></div>
           <div class="info-val">${vehicle.mileage.toLocaleString()} km</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="health_score">${t('health_score')}</div>
+          <div class="info-key" data-i18n="health_score"></div>
           <div class="info-val">${vehicle.health}%</div>
         </div>
         <div class="info-row">
-          <div class="info-key" data-i18n="last_service">${t('last_service')}</div>
+          <div class="info-key" data-i18n="last_service"></div>
           <div class="info-val">${new Date(vehicle.lastService).toLocaleDateString()}</div>
         </div>
       </div>
